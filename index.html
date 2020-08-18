@@ -1,0 +1,171 @@
+<style>
+    body {
+        background-color: cadetblue;
+    }
+
+    .container {
+        position: relative;
+        display: grid;
+        width: 900px;
+        height: 900px;
+        margin: 0 auto;
+
+        grid-template-columns: 50px auto 50px;
+        grid-template-rows: 50px auto 50px;
+
+        background-color: darkslategrey;
+        border: 3px solid goldenrod;
+        border-radius: 50px;
+    }
+
+    .grid {
+        position: relative;
+        display: grid;
+        width: 800px;
+        height: 800px;
+
+        grid-template-columns: repeat(16, 50px);
+        grid-template-rows: repeat(16, 50px);
+
+        grid-column-start: 2;
+        grid-column-end: 3;
+        grid-row-start: 2;
+        grid-row-end: 3;
+
+        background-color: darkslategrey;
+    }
+
+    button {
+        margin: auto;
+
+        grid-column-start: 2;
+        grid-column-end: 3;
+        grid-row-start: 1;
+        grid-row-end: 2;
+    }
+</style>
+<body>
+    <div class="container">
+        <button id="new-grid">New Grid</button>
+        <div class="grid">
+        </div>
+    </div>
+</body>
+<script>
+    const cont = document.querySelector('.container');
+    const grid = document.querySelector('.grid');
+    const gridWidth = grid.getBoundingClientRect().width;
+    const gridHeight = grid.getBoundingClientRect().height;
+    const defaultSize = 50;
+
+    let currentSize;
+
+    function setGridSize(size) {
+        grid.setAttribute(
+            'style',
+            `grid-template-columns: repeat(${Math.floor(gridWidth/size)}, ${size}px);`+
+            `grid-template-rows: repeat(${Math.floor(gridHeight/size)}, ${size}px);`
+        );
+
+        /*cont.setAttribute(
+            'style',
+            `width: ${size*50+100}; height: ${size*50+100};`+
+            `grid-template-columns: 50px auto 50px;`+
+            `grid-template-rows: 50px auto 50px;`
+        );*/
+    }
+
+
+    function addBox(gridSize) {
+        let columnStart, columnEnd, rowStart, rowEnd;
+        const boxQty = gridWidth / gridSize;
+        currentSize = boxQty;
+
+        setGridSize(gridSize);
+
+        for (let row=1; row<=boxQty; row++) {
+            for (let column=1; column<=boxQty; column++) {
+                const box = document.createElement('div');
+                const count = grid.childElementCount;
+                columnStart = column;
+                columnEnd = column + 1;
+                rowStart = row;
+                rowEnd =  row + 1;
+
+                box.setAttribute(
+                    'style',
+                    `border: 1px solid black; background: white;`+
+                    `grid-column-start:${columnStart}; grid-column-end: ${columnEnd};`+
+                    `grid-row-start: ${rowStart}; grid-row-end: ${rowEnd};`
+                );
+                box.id = count + 1;
+
+                grid.appendChild(box);
+            }
+        }
+    }
+
+
+    function setColor(element, rgb) {
+        const box = document.getElementById(element);
+
+        box.style.backgroundColor = `rgb(${rgb[0]}, ${rgb[1]}, ${rgb[2]})`;
+    }
+
+
+    function randomRGB() {
+        let rgb = [];
+
+        for (let i=0; i<3; i++) {
+            rgb.push(Math.random()*255);
+        }
+
+        return rgb;
+    }
+
+
+    addBox(defaultSize);
+    let boxes = Array.from(grid.children);
+    let isDrawing = false;
+    const btn = document.getElementById('new-grid');
+
+    grid.addEventListener('mousedown', e => {
+        isDrawing = true;
+        boxes.forEach(box => {
+            box.addEventListener('mouseover', e => {
+                if (isDrawing) {
+                    let rgb = [0,0,0];
+                    setColor(box.id, rgb);
+                }
+            });
+        });
+    });
+
+    window.addEventListener('mouseup', e => {
+        isDrawing = false;
+    })
+
+
+    btn.addEventListener('click', e => {
+        while (grid.childElementCount > 0) {
+            grid.removeChild(grid.firstElementChild);
+        }
+
+        let gridSize = prompt('Enter the size of the new grid: ');
+
+        if (!gridSize) gridSize = currentSize;
+        if (2 > gridSize) {
+            alert('The grid size should be greater than 1.');
+            gridSize = currentSize;
+        }
+        if (gridSize > 100) {
+            alert('The grid size should not be greater than 100.');
+            gridSize = currentSize;
+        }
+
+        setGridSize(gridSize);
+        addBox(gridSize);
+        boxes = Array.from(grid.children);
+    });
+
+</script>
