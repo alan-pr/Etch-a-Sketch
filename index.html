@@ -1,6 +1,23 @@
 <style>
     body {
+        display: flex;
         background-color: cadetblue;
+    }
+
+    .menu {
+        position: relative;
+        margin-left: 250px;
+        padding-top: 30px;
+        padding-left: 10px;
+        width: 250px;
+        height: fit-content;
+
+        background-color: darkslategrey;
+        border: 3px solid goldenrod;
+        border-radius: 50px;
+        font-family: monospace;
+        font-weight: bold;
+        color: goldenrod;
     }
 
     .container {
@@ -9,6 +26,7 @@
         width: 900px;
         height: 900px;
         margin: 0 auto;
+        margin-left: 100px;
 
         grid-template-columns: 50px auto 50px;
         grid-template-rows: 50px auto 50px;
@@ -16,6 +34,7 @@
         background-color: darkslategrey;
         border: 3px solid goldenrod;
         border-radius: 50px;
+        transition: all 0.5s linear;
     }
 
     .grid {
@@ -43,8 +62,42 @@
         grid-row-start: 1;
         grid-row-end: 2;
     }
+
+    hr {
+        margin-right: 10px;
+        border: 1px dashed goldenrod;
+    }
+
+    .hidden {
+        opacity: 0;
+    }
 </style>
 <body>
+    <div class="menu">
+        <div class="pen-color-div">
+            <label for="pencil-color">Choose a pencil color:</label><br><br>
+            <select id="pen-color">
+                <option value="black">Black</option>
+                <option value="white">White</option>
+                <option value="random">Random</option>
+                <option value="custom">Custom</option>
+            </select>
+        </div><br>
+        <hr><br><br>
+        <div class="bg-color-div">
+            <label for="bg-color">Choose a background color:</label><br><br>
+            <select id="bg-color">
+                <option value="white">White</option>
+                <option value="black">Black</option>
+                <option value="random">Random</option>
+                <option value="custom">Custom</option>
+            </select>
+        </div><br><hr>
+        <div class="config-others"><br><br>
+            <input type="checkbox" id="grid-config" checked="true">
+            <label for="grid-config">Turn on/off grid.</label>
+        </div><br><br>
+    </div>
     <div class="container">
         <button id="new-grid">New Grid</button>
         <div class="grid">
@@ -52,13 +105,21 @@
     </div>
 </body>
 <script>
+    const confMenu = document.querySelector('.menu');
+    const penColorMenu = document.querySelector('#pen-color');
+    const divPenColor = document.querySelector('.pen-color-div');
+    const penColorElementsQty = divPenColor.childElementCount;
+    const divBgColor = document.querySelector('.bg-color-div');
+    const bgColorMenu = document.querySelector('#bg-color');
     const cont = document.querySelector('.container');
     const grid = document.querySelector('.grid');
     const gridWidth = grid.getBoundingClientRect().width;
     const gridHeight = grid.getBoundingClientRect().height;
     const defaultSize = 50;
 
-    let currentSize;
+    let currentSize, checkboxColor, buttonColor; 
+    let randomColorEnabled = false;
+    let elementsQty = {random: 0, custom: 0};
 
     function setGridSize(size) {
         grid.setAttribute(
@@ -106,7 +167,12 @@
     }
 
 
-    function setColor(element, rgb) {
+    function setPenColor(element, rgb) {
+        if (typeof rgb == 'string') {
+            if (rgb == 'black') rgb = [0,0,0];
+            else if (rgb == 'white') rgb = [255,255,255];
+        }
+
         const box = document.getElementById(element);
 
         box.style.backgroundColor = `rgb(${rgb[0]}, ${rgb[1]}, ${rgb[2]})`;
@@ -124,6 +190,168 @@
     }
 
 
+    function insertChildNode(parent, child, count=1, attributes=null) {4
+        let childNode;
+
+        for (let i=0; i<count; i++) {
+
+            childNode = document.createElement(child);
+
+            if (attributes != null) {
+                if (child == 'input') {
+                    for (let attr in attributes) {
+                        if (attr == 'type') {
+                            childNode.type = attributes[attr];
+                            if (attributes[attr] == 'checkbox') {
+                                checkboxColor = childNode;
+                            }
+                        }
+                        if (attr == 'id') {
+                            childNode.id = attributes[attr];
+                        }
+                        if (attr == 'value') {
+                            childNode.value = attributes[attr];
+                        }
+                    }
+                }
+                for (let attr in attributes) {
+                    if (attr == 'text') {
+                        text = document.createTextNode(attributes['text']);
+                        childNode.appendChild(text);
+                        if (child == 'button') buttonColor = childNode;
+                    }
+                    if (attr == 'bg') {
+                        childNode.style.backgroundColor = attributes[attr];
+                    }
+                    if (attr == 'width') {
+                        childNode.style.width = attributes[attr];
+                    }
+                    if (attr == 'height') {
+                        childNode.style.height = attributes[attr];
+                    }
+                    if (attr == 'position') {
+                        childNode.style.position = attributes[attr];
+                    }
+                    if (attr == 'color') {
+                        childNode.style.color = attributes[attr];
+                    }
+                    if (attr == 'margin') {
+                        childNode.style.margin = attributes[attr];
+                    }
+                    if (attr == 'font') {
+                        childNode.style.fontFamily = attributes[attr];
+                    }
+                    if (attr == 'border') {
+                        childNode.style.border = attributes[attr];
+                    }
+                    if (attr == 'borderRadius') {
+                        childNode.style.borderRadius = attributes[attr];
+                    }
+                    if (attr == 'paddingTop') {
+                        childNode.style.paddingTop = attributes[attr];
+                    }
+                    if (attr == 'paddingLeft') {
+                        childNode.style.paddingLeft = attributes[attr];
+                    }
+                    if (attr == 'transition') {
+                        childNode.style.transition = attributes[attr];
+                    }
+                    if (attr == 'placeholder') {
+                        childNode.placeholder = attributes[attr];
+                    }
+                    if (attr == 'maxlen') {
+                        childNode.maxLength = attributes[attr];
+                    }
+                    if (attr == 'id') {
+                        childNode.id = attributes[attr];
+                    }
+                }
+            }
+            parent.appendChild(childNode);
+        }
+        return childNode;
+    }
+
+
+    function createPenColorElements(div) {
+        console.log(div);
+        insertChildNode(divColorRand, 'br', 2);
+        insertChildNode(divColorRand, 'input', 1, {
+            type: 'checkbox', id: 'checkbox-color', value: 'false'
+        });
+        insertChildNode(divColorRand, 'label', 1, {for: 'checkbox-color', text: 'Change color in each click.'});
+        insertChildNode(divColorRand, 'br', 2);
+        insertChildNode(divColorRand, 'button', 1, {text: 'Change random color'});
+        insertChildNode(divColorRand, 'br', 2);
+
+        return 9;
+    }
+
+
+    function createPenCustomColorElements() {
+        insertChildNode(divColorCust, 'br', 2);
+
+        const field = insertChildNode(divColorCust, 'input', 1, {
+            type: 'text', placeholder: 'R,G,B', width: '100px', maxlen: '11'
+        });
+
+        insertChildNode(divColorCust, 'br', 2);
+        const btn = insertChildNode(divColorCust, 'button', 1, {text: 'Set Color'});
+        insertChildNode(divColorCust, 'br', 2);
+
+        return {field: field, btn: btn, qty: 8};
+    }
+
+
+    function createBgColorElements(div) {
+        insertChildNode(div, 'br', 2);
+        const btn = insertChildNode(div, 'button', 1, {text: 'Change random color'});
+
+        return {btn: btn, qty: 3};
+    }
+
+
+    function createBgCustColorElements(div) {
+        insertChildNode(div, 'br', 2);
+
+        const field = insertChildNode(div, 'input', 1, {
+            type: 'text', placeholder: 'R,G,B', width: '100px', maxlen: '11'
+        });
+
+        insertChildNode(div, 'br', 2);
+        const btn = insertChildNode(div, 'button', 1, {text: 'Set Color'});
+        insertChildNode(div, 'br', 2);
+
+        return {field: field, btn: btn, qty: 8};
+    }
+
+
+    function popUpMsg(msg) {
+        let div;
+        const body = document.querySelector('body');
+        div = insertChildNode(body, 'div', 1, {
+            text: msg, width: '300px', height: '50px', bg: 'rgb(26, 46, 46)',
+            color: 'goldenrod', position: 'fixed', margin: '0 40%', font: 'monospace',
+            border: '1px solid goldenrod', borderRadius: '5px', paddingTop: '30px',
+            paddingLeft: '50px', transition: 'all 5s ease'
+        });
+        setTimeout(() => {hidePopUpMsg(div)}, 1000);
+    }
+
+
+    function hidePopUpMsg(div) {
+        div.classList.add('hidden');
+        div.addEventListener('transitionend', e => {
+            const body = document.querySelector('body');
+            body.removeChild(div);
+        });
+    }
+
+
+    let penColor = penColorMenu.value;
+    let bgColor = bgColorMenu.value;
+    let gridColor = (bgColorMenu.value == 'white') ? 'black': 'white';
+
     addBox(defaultSize);
     let boxes = Array.from(grid.children);
     let isDrawing = false;
@@ -134,8 +362,8 @@
         boxes.forEach(box => {
             box.addEventListener('mouseover', e => {
                 if (isDrawing) {
-                    let rgb = [0,0,0];
-                    setColor(box.id, rgb);
+                    let rgb = penColor;
+                    setPenColor(box.id, rgb);
                 }
             });
         });
@@ -143,6 +371,7 @@
 
     window.addEventListener('mouseup', e => {
         isDrawing = false;
+        if (randomColorEnabled) penColor = randomRGB();
     })
 
 
@@ -166,6 +395,148 @@
         setGridSize(gridSize);
         addBox(gridSize);
         boxes = Array.from(grid.children);
+    });
+
+    let colorName;
+    const divColorRand = insertChildNode(divPenColor, 'div', 1, {id: 'random'});
+    const divColorCust = insertChildNode(divPenColor, 'div', 1, {id: 'custom'});
+
+    penColorMenu.addEventListener('change', e => {
+        colorName = e.target.value;
+
+        if (colorName == 'random') {
+            penColor = randomRGB();
+            elementsQty.random = createPenColorElements(divColorRand);
+
+            if (randomColorEnabled != undefined) {
+                if (randomColorEnabled) checkboxColor.checked = true;
+                else checkboxColor.checked = false;
+            }
+
+            checkboxColor.addEventListener('click', e => {
+                randomColorEnabled = !randomColorEnabled;
+            });
+            buttonColor.addEventListener('click', e => {
+                penColor = randomRGB();
+                popUpMsg('The pencil color has been changed.');
+            })
+        } else {
+            for (let i = 0; i < elementsQty.random; i++) {
+                divColorRand.removeChild(divColorRand.lastElementChild);
+            }
+            elementsQty.random = 0;
+        }
+
+        if (colorName == 'custom') {
+            const reg = /(\d(\d?){2},){2}\d(\d?){2}/
+            const elements = createPenCustomColorElements();
+            const field = elements.field;
+            const btn = elements.btn;
+            elementsQty.custom = elements.qty;
+
+            btn.addEventListener('click', e => {
+                if (reg.test(field.value)) {
+                    let rgb = field.value.split(',');
+
+                    for (let i=0; i<3; i++) {
+                        if (parseInt(rgb[i], 10) <= 255) {
+                            penColor = rgb;
+                            popUpMsg('The pencil color has been changed.');
+                        } else {
+                            popUpMsg('The RGB color numbers are wrong.');
+                            break;
+                        }
+                    }
+                } else {
+                    popUpMsg('The RGB color numbers are wrong.');
+                }
+            });
+        } else {
+            for (let i = 0; i < elementsQty.custom; i++) {
+                divColorCust.removeChild(divColorCust.lastElementChild);
+            }
+            elementsQty.custom = 0;
+        }
+    });
+
+    const divBgColorRand = insertChildNode(divBgColor, 'div', 1, {id: 'div-bg-color-1'});
+    const divBgColorCust = insertChildNode(divBgColor, 'div', 1, {id: 'div-bg-color-2'});
+    let btnBgColorRand, btnBgColorCust;
+
+    bgColorMenu.addEventListener('change', e => {
+
+        if (e.target.value == 'white' || e.target.value == 'black') {
+            bgColor = e.target.value;
+            gridColor = (e.target.value == 'white') ? 'black': 'white';
+        } 
+        
+        if (e.target.value == 'random') {
+            btnBgColorRand = createBgColorElements(divBgColorRand);
+
+            btnBgColorRand.btn.addEventListener('click', e => {
+                bgColor = randomRGB();
+                gridColor = 'black';
+                boxes.forEach(box => {
+                    box.style.backgroundColor = `rgb(${bgColor})`;
+                    box.style.borderColor = gridColor;
+                });
+            });
+        } else {
+            if(divBgColorRand.childElementCount > 0) {
+                for (let i=0; i<btnBgColorRand.qty; i++) {
+                    divBgColorRand.removeChild(divBgColorRand.lastElementChild);
+                }
+            }
+        }
+
+        if (e.target.value == 'custom') {
+            btnBgColorCust = createBgCustColorElements(divBgColorCust);
+            const btn = btnBgColorCust.btn;
+            const reg = /(\d(\d?){2},){2}\d(\d?){2}/;
+            const field = btnBgColorCust.field;
+
+            btn.addEventListener('click', e => {
+                if (reg.test(field.value)) {
+                    console.log(1)
+                    let rgb = field.value.split(',');
+
+                    for (let i=0; i<3; i++) {
+                        if (parseInt(rgb[i], 10) <= 255) {
+                            bgColor = rgb;
+                            boxes.forEach(box => {
+                                box.style.backgroundColor = `rgb(${bgColor})`;
+                                box.style.borderColor = gridColor;
+                            });
+                            popUpMsg('The background color has been changed.');
+                        } else {
+                            popUpMsg('The RGB color numbers are wrong.');
+                            break;
+                        }
+                    }
+                } else {
+                    popUpMsg('The RGB color numbers are wrong.');
+                }
+            });
+        } else {
+            if(divBgColorCust.childElementCount > 0) {
+                for (let i=0; i<btnBgColorCust.qty; i++) {
+                    divBgColorCust.removeChild(divBgColorCust.lastElementChild);
+                }
+            }
+        }
+        boxes.forEach(box => {
+            box.style.backgroundColor = bgColor;
+            box.style.borderColor = gridColor;
+        });
+    });
+
+    const gridCheckbox = document.querySelector('#grid-config');
+
+    gridCheckbox.addEventListener('click', e => {
+        boxes.forEach(box => {
+            if (!gridCheckbox.checked) box.style.borderWidth = '0';
+            else box.style.borderWidth = '1px';
+        });
     });
 
 </script>
